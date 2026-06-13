@@ -6924,817 +6924,512 @@ WPNOZ:          ld	hl,$D00B
 	jp	nz,$2201
 	call	$219C
 	jp	$1A6B
-;
-;******************************************************************************************
-;
-; Player 1 symbol
-;
-;******************************************************************************************
-;
 
-	DB	$02, $08		; Width and Height of object
+;*******************************************************************************
+; GORF_PLAYER1
+; 2 bytes/row = 8 pixels wide, 8 rows
+; Sprite bitmap size: 16 bytes ($10)
+; Object total size: 18 bytes ($12), including 2-byte width/height header
+;*******************************************************************************
+GORF_PLAYER1:
+        .DB      $02,$08           ; width bytes, height rows
+        .DB      $FF,$F0           ; 3 3 3 3 3 3 . .
+        .DB      $FF,$F0           ; 3 3 3 3 3 3 . .
+        .DB      $9F,$70           ; 2 1 3 3 1 3 . .
+        .DB      $80,$30           ; 2 . . . . 3 . .
+        .DB      $80,$10           ; 2 . . . . 1 . .
+        .DB      $9F,$F0           ; 2 1 3 3 3 3 . .
+        .DB      $FF,$F0           ; 3 3 3 3 3 3 . .
+        .DB      $FF,$F0           ; 3 3 3 3 3 3 . .
 
-	DB	$FF, $F0
-	DB	$FF, $F0
-	DB	$9F, $70
-	DB	$80, $30
-	DB	$80, $10
-	DB	$9F, $F0
-	DB	$FF, $F0
-	DB	$FF, $F0
+;*******************************************************************************
+; GORF_PLAYER2
+; 2 bytes/row = 8 pixels wide, 8 rows
+; Sprite bitmap size: 16 bytes ($10)
+; Object total size: 18 bytes ($12), including 2-byte width/height header
+;*******************************************************************************
+GORF_PLAYER2:
+        .DB      $02,$08           ; width bytes, height rows
+        .DB      $FF,$F0           ; 3 3 3 3 3 3 . .
+        .DB      $83,$30           ; 2 . . 3 . 3 . .
+        .DB      $81,$10           ; 2 . . 1 . 1 . .
+        .DB      $99,$90           ; 2 1 2 1 2 1 . .
+        .DB      $99,$90           ; 2 1 2 1 2 1 . .
+        .DB      $99,$10           ; 2 1 2 1 . 1 . .
+        .DB      $9C,$30           ; 2 1 3 . . 3 . .
+        .DB      $FF,$F0           ; 3 3 3 3 3 3 . .
 
-;
-;******************************************************************************************
-;
-; Player 2 symbol
-;
-;******************************************************************************************
-;
-	DB	$02, $08		; Width and Height of object
+;*******************************************************************************
+; GORF_SHIP - Interstellar Space Defense Fighter
+; 4 bytes/row = 16 pixels wide, 13 rows
+; Sprite bitmap size: 52 bytes ($34)
+; Object total size: 54 bytes ($36), including 2-byte width/height header
+;*******************************************************************************
+GORF_SHIP:
+        .DB      $04,$0D           ; width bytes, height rows
+        .DB      $2A,$AA,$80,$00   ; . 2 2 2 2 2 2 2 2 . . . . . . .
+        .DB      $95,$55,$A8,$00   ; 2 1 1 1 1 1 1 1 2 2 2 . . . . .
+        .DB      $2A,$AA,$80,$00   ; . 2 2 2 2 2 2 2 2 . . . . . . .
+        .DB      $00,$54,$0A,$A0   ; . . . . 1 1 1 . . . 2 2 2 2 . .
+        .DB      $00,$15,$02,$A8   ; . . . . . 1 1 1 . . . 2 2 2 2 .
+        .DB      $55,$55,$52,$AA   ; 1 1 1 1 1 1 1 1 1 1 . 2 2 2 2 2
+        .DB      $02,$AA,$AA,$AA   ; . . . 2 2 2 2 2 2 2 2 2 2 2 2 2
+        .DB      $55,$55,$52,$AA   ; 1 1 1 1 1 1 1 1 1 1 . 2 2 2 2 2
+        .DB      $00,$15,$02,$A8   ; . . . . . 1 1 1 . . . 2 2 2 2 .
+        .DB      $00,$54,$0A,$A0   ; . . . . 1 1 1 . . . 2 2 2 2 . .
+        .DB      $2A,$AA,$80,$00   ; . 2 2 2 2 2 2 2 2 . . . . . . .
+        .DB      $95,$55,$A8,$00   ; 2 1 1 1 1 1 1 1 2 2 2 . . . . .
+        .DB      $2A,$AA,$80,$00   ; . 2 2 2 2 2 2 2 2 . . . . . . .
 
-	DB	$FF, $F0
-	DB	$83, $30
-	DB	$81, $10
-	DB	$99, $90
-	DB	$99, $90
-	DB	$99, $10
-	DB	$9C, $30
-	DB	$FF, $F0
+;*******************************************************************************
+; GORF_SHIP_SMALL - Interstellar Space Defense Fighter
+; 3 bytes/row = 12 pixels wide, 11 rows
+; Sprite bitmap size: 33 bytes ($21)
+; Object total size: 35 bytes ($23), including 2-byte width/height header
+; Pixel values: . = 0, 1 = color 1, 2 = color 2, 3 = color 3
 ;
-;******************************************************************************************
-;
-; Gorf Ship: Yellow and Blue ???
-;
-;******************************************************************************************
-;
-	DB	$04, $0D		; Width and Height of object
+;*******************************************************************************
+GORF_SHIP_SMALL:
+        .DB      $03,$0B           ; width bytes, height rows
+        .DB      $2A,$A8,$00       ; . 2 2 2 2 2 2 . . . . .
+        .DB      $AA,$A0,$00       ; 2 2 2 2 2 2 . . . . . .
+        .DB      $05,$00,$00       ; . . 1 1 . . . . . . . .
+        .DB      $15,$40,$A0       ; . 1 1 1 1 . . . 2 2 . .
+        .DB      $55,$54,$28       ; 1 1 1 1 1 1 1 . . 2 2 .
+        .DB      $02,$AA,$AA       ; . . . 2 2 2 2 2 2 2 2 2
+        .DB      $55,$54,$28       ; 1 1 1 1 1 1 1 . . 2 2 .
+        .DB      $15,$40,$A0       ; . 1 1 1 1 . . . 2 2 . .
+        .DB      $05,$00,$00       ; . . 1 1 . . . . . . . .
+        .DB      $AA,$A0,$00       ; 2 2 2 2 2 2 . . . . . .
+        .DB      $2A,$A8,$00       ; . 2 2 2 2 2 2 . . . . .
 
-	DB	$2A, $AA, $80, $00
-	DB	$95, $55, $A8, $00
-	DB	$2A, $AA, $80, $00
-	DB	$00, $54, $0A, $A0
-	DB	$00, $15, $02, $A8
-	DB	$55, $55, $52, $AA
-	DB	$02, $AA, $AA, $AA
-	DB	$55, $55, $52, $AA
-	DB	$00, $15, $02, $A8
-	DB	$00, $54, $0A, $A0
-	DB	$2A, $AA, $80, $00
-	DB	$95, $55, $A8, $00
-	DB	$2A, $AA, $80, $00
+;*******************************************************************************
+; GORF_BOUNCE_DOWN
+; 5 bytes/row = 20 pixels wide, 15 rows
+; Sprite bitmap size: 75 bytes ($4B)
+; Object total size: 77 bytes ($4D), including 2-byte width/height header
+;*******************************************************************************
+GORF_BOUNCE_DOWN:
+        .DB      $05,$0F           ; width bytes, height rows
+        .DB      $80,$FC,$00,$00,$04 ; 2 . . . 3 3 3 . . . . . . . . . . . 1 .
+        .DB      $83,$FF,$F0,$00,$10 ; 2 . . 3 3 3 3 3 3 3 . . . . . . . 1 . .
+        .DB      $AB,$FF,$FF,$C0,$40 ; 2 2 2 3 3 3 3 3 3 3 3 3 3 . . . 1 . . .
+        .DB      $03,$FF,$FF,$FF,$00 ; . . . 3 3 3 3 3 3 3 3 3 3 3 3 3 . . . .
+        .DB      $0F,$FD,$55,$FF,$F0 ; . . 3 3 3 3 3 1 1 1 1 1 3 3 3 3 3 3 . .
+        .DB      $0D,$5E,$95,$FF,$FC ; . . 3 1 1 1 3 2 2 1 1 1 3 3 3 3 3 3 3 .
+        .DB      $0E,$6F,$FF,$FF,$FF ; . . 3 2 1 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+        .DB      $0D,$5F,$FF,$FF,$FF ; . . 3 1 1 1 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+        .DB      $0E,$6F,$FF,$FF,$FF ; . . 3 2 1 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+        .DB      $0D,$5D,$55,$FF,$FC ; . . 3 1 1 1 3 1 1 1 1 1 3 3 3 3 3 3 3 .
+        .DB      $0F,$FE,$95,$FF,$F0 ; . . 3 3 3 3 3 2 2 1 1 1 3 3 3 3 3 3 . .
+        .DB      $03,$FF,$FF,$FF,$00 ; . . . 3 3 3 3 3 3 3 3 3 3 3 3 3 . . . .
+        .DB      $AB,$FF,$FF,$C0,$40 ; 2 2 2 3 3 3 3 3 3 3 3 3 3 . . . 1 . . .
+        .DB      $83,$FF,$F0,$00,$10 ; 2 . . 3 3 3 3 3 3 3 . . . . . . . 1 . .
+        .DB      $80,$FC,$00,$00,$04 ; 2 . . . 3 3 3 . . . . . . . . . . . 1 .
 
-;
-;******************************************************************************************
-;
-; Unknown Enemy Ship ???
-;
-;******************************************************************************************
-;
-	DB	$03, $0B		; Width and Height of object
+;*******************************************************************************
+; GORF_BOUNCE_UP - Gorf bouncing up character (opening screen)
+; 5 bytes/row = 20 pixels wide, 15 rows
+; Sprite bitmap size: 75 bytes ($4B)
+; Object total size: 77 bytes ($4D), including 2-byte width/height header
+;*******************************************************************************
+GORF_BOUNCE_UP:
+        .DB      $05,$0F           ; width bytes, height rows
+        .DB      $00,$FC,$00,$00,$80 ; . . . . 3 3 3 . . . . . . . . . 2 . . .
+        .DB      $03,$FF,$F0,$00,$20 ; . . . 3 3 3 3 3 3 3 . . . . . . . 2 . .
+        .DB      $57,$FF,$FF,$C0,$80 ; 1 1 1 3 3 3 3 3 3 3 3 3 3 . . . 2 . . .
+        .DB      $43,$FF,$FF,$FF,$00 ; 1 . . 3 3 3 3 3 3 3 3 3 3 3 3 3 . . . .
+        .DB      $4F,$FD,$6A,$FF,$F0 ; 1 . 3 3 3 3 3 1 1 2 2 2 3 3 3 3 3 3 . .
+        .DB      $0F,$BE,$AA,$FF,$FC ; . . 3 3 2 3 3 2 2 2 2 2 3 3 3 3 3 3 3 .
+        .DB      $0F,$BF,$FF,$FF,$FF ; . . 3 3 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+        .DB      $0F,$BF,$FF,$FF,$FF ; . . 3 3 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+        .DB      $0F,$BF,$FF,$FF,$FF ; . . 3 3 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+        .DB      $0F,$BD,$6A,$FF,$FC ; . . 3 3 2 3 3 1 1 2 2 2 3 3 3 3 3 3 3 .
+        .DB      $4F,$FE,$AA,$FF,$F0 ; 1 . 3 3 3 3 3 2 2 2 2 2 3 3 3 3 3 3 . .
+        .DB      $43,$FF,$FF,$FF,$00 ; 1 . . 3 3 3 3 3 3 3 3 3 3 3 3 3 . . . .
+        .DB      $57,$FF,$FF,$C0,$80 ; 1 1 1 3 3 3 3 3 3 3 3 3 3 . . . 2 . . .
+        .DB      $03,$FF,$F0,$00,$20 ; . . . 3 3 3 3 3 3 3 . . . . . . . 2 . .
+        .DB      $00,$FC,$00,$00,$80 ; . . . . 3 3 3 . . . . . . . . . 2 . . .
 
-	DB	$2A, $A8, $00
-	DB	$AA, $A0, $00
-	DB	$05, $00, $00
-	DB	$15, $40, $A0
-	DB	$55, $54, $28
-	DB	$02, $AA, $AA
-	DB	$55, $54, $28
-	DB	$15, $40, $A0
-	DB	$05, $00, $00
-	DB	$AA, $A0, $00
-	DB	$2A, $A8, $00
-;
-;******************************************************************************************
-;
-; Beginning of Gorf bouncing down character (opening screen)
-;
-;******************************************************************************************
-L2281:	DB	$05, $0F	; Width and Height of character
+;*******************************************************************************
+; GORF_EXTREME_SMALL - probably from Space Warp screen
+; 2 bytes/row = 8 pixels wide, 5 rows
+; Sprite bitmap size: 10 bytes ($A)
+; Object total size: 12 bytes ($C), including 2-byte width/height header
+;*******************************************************************************
+GORF_EXTREME_SMALL:
+        .DB      $02,$05           ; width bytes, height rows
+        .DB      $8F,$04           ; 2 . 3 3 . . 1 .
+        .DB      $BF,$70           ; 2 3 3 3 1 3 . .
+        .DB      $37,$FC           ; . 3 1 3 3 3 3 .
+        .DB      $BF,$70           ; 2 3 3 3 1 3 . .
+        .DB      $8F,$04           ; 2 . 3 3 . . 1 .
 
-	DB	$80,$FC,$00,$00,$04
-	DB	$83,$FF,$F0,$00,$10
-	DB	$AB,$FF,$FF,$C0,$40
-	DB	$03,$FF,$FF,$FF,$00
-	DB	$0F,$FD,$55,$FF,$F0
-	DB	$0D,$5E,$95,$FF,$FC
-	DB	$0E,$6F,$FF,$FF,$FF
-	DB	$0D,$5F,$FF,$FF,$FF
-	DB	$0E,$6F,$FF,$FF,$FF
-	DB	$0D,$5D,$55,$FF,$FC
-	DB	$0F,$FE,$95,$FF,$F0
-	DB	$03,$FF,$FF,$FF,$00
-	DB	$AB,$FF,$FF,$C0,$40
-	DB	$83,$FF,$F0,$00,$10
-	DB	$80,$FC,$00,$00,$04
-;
-;******************************************************************************************
-;
-; Beginning of Gorf bouncing up character (opening screen)
-;
-;******************************************************************************************
-;
-	DB	$05,$0F		; Width and Height of character
+;*******************************************************************************
+; GORF_VERY_VERY_SMALL - probably from Space Warp screen
+; 3 bytes/row = 12 pixels wide, 7 rows
+; Sprite bitmap size: 21 bytes ($15)
+; Object total size: 23 bytes ($17), including 2-byte width/height header
+;*******************************************************************************
+GORF_VERY_VERY_SMALL:
+        .DB      $03,$07           ; width bytes, height rows
+        .DB      $83,$F0,$40       ; 2 . . 3 3 3 . . 1 . . .
+        .DB      $AF,$FF,$00       ; 2 2 3 3 3 3 3 3 . . . .
+        .DB      $0E,$E7,$C0       ; . . 3 2 3 2 1 3 3 . . .
+        .DB      $3E,$FF,$C0       ; . 3 3 2 3 3 3 3 3 . . .
+        .DB      $0E,$E7,$C0       ; . . 3 2 3 2 1 3 3 . . .
+        .DB      $AF,$FF,$00       ; 2 2 3 3 3 3 3 3 . . . .
+        .DB      $83,$F0,$40       ; 2 . . 3 3 3 . . 1 . . .
 
-	DB	$00,$FC,$00,$00,$80
-	DB	$03,$FF,$F0,$00,$20
-	DB	$57,$FF,$FF,$C0,$80
-	DB	$43,$FF,$FF,$FF,$00
-	DB	$4F,$FD,$6A,$FF,$F0
-	DB	$0F,$BE,$AA,$FF,$FC
-	DB	$0F,$BF,$FF,$FF,$FF
-	DB	$0F,$BF,$FF,$FF,$FF
-	DB	$0F,$BF,$FF,$FF,$FF
-	DB	$0F,$BD,$6A,$FF,$FC
-	DB	$4F,$FE,$AA,$FF,$F0
-	DB	$43,$FF,$FF,$FF,$00
-	DB	$57,$FF,$FF,$C0,$80
-	DB	$03,$FF,$F0,$00,$20
-	DB	$00,$FC,$00,$00,$80
-;
-;
-;******************************************************************************************
-;
-; Gorf: Extremely small - probably from Space Warp screen
-;
-;******************************************************************************************
-;
-	DB	$02,$05			; Width and Height of character
+;*******************************************************************************
+; GORF_MINI - probably from Space Warp screen
+; 2 bytes/row = 8 pixels wide, 3 rows
+; Sprite bitmap size: 6 bytes ($6)
+; Object total size: 8 bytes ($8), including 2-byte width/height header
+;*******************************************************************************
+GORF_MINI:
+        .DB      $02,$03           ; width bytes, height rows
+        .DB      $8F,$00           ; 2 . 3 3 . . . .
+        .DB      $37,$C0           ; . 3 1 3 3 . . .
+        .DB      $8F,$00           ; 2 . 3 3 . . . .
 
-	DB	$8F,$04
-	DB	$BF,$70
-	DB	$37,$FC
-	DB	$BF,$70
-	DB	$8F,$04
-;
-;
-;******************************************************************************************
-;
-; Gorf: Very, very small - probably from Space Warp screen
-;
-;******************************************************************************************
-;
-	DB	$03, $07		; Width and Height of object
+;*******************************************************************************
+; GORF_VERY_SMALL
+; 3 bytes/row = 12 pixels wide, 9 rows
+; Sprite bitmap size: 27 bytes ($1B)
+; Object total size: 29 bytes ($1D), including 2-byte width/height header
+;*******************************************************************************
+GORF_VERY_SMALL:
+        .DB      $03,$09           ; width bytes, height rows
+        .DB      $83,$F0,$01       ; 2 . . 3 3 3 . . . . . 1
+        .DB      $8F,$FF,$04       ; 2 . 3 3 3 3 3 3 . . 1 .
+        .DB      $AF,$FF,$F0       ; 2 2 3 3 3 3 3 3 3 3 . .
+        .DB      $0E,$E5,$FC       ; . . 3 2 3 2 1 1 3 3 3 .
+        .DB      $0D,$FF,$FC       ; . . 3 1 3 3 3 3 3 3 3 .
+        .DB      $0E,$E5,$FC       ; . . 3 2 3 2 1 1 3 3 3 .
+        .DB      $AF,$FF,$F0       ; 2 2 3 3 3 3 3 3 3 3 . .
+        .DB      $8F,$FF,$04       ; 2 . 3 3 3 3 3 3 . . 1 .
+        .DB      $83,$F0,$01       ; 2 . . 3 3 3 . . . . . 1
 
-	DB	$83, $F0, $40
-	DB	$AF, $FF, $00
-	DB	$0E, $E7, $C0
-	DB	$3E, $FF, $C0
-	DB	$0E, $E7, $C0
-	DB	$AF, $FF, $00
-	DB	$83, $F0, $40
+;*******************************************************************************
+; GORF_SMALL
+; 4 bytes/row = 16 pixels wide, 12 rows
+; Sprite bitmap size: 48 bytes ($30)
+; Object total size: 50 bytes ($32), including 2-byte width/height header
+;*******************************************************************************
+GORF_SMALL:
+        .DB      $04,$0C           ; width bytes, height rows
+        .DB      $80,$FF,$00,$04   ; 2 . . . 3 3 3 3 . . . . . . 1 .
+        .DB      $83,$FF,$FC,$10   ; 2 . . 3 3 3 3 3 3 3 3 . . 1 . .
+        .DB      $AB,$FF,$FF,$C0   ; 2 2 2 3 3 3 3 3 3 3 3 3 3 . . .
+        .DB      $03,$FE,$97,$F0   ; . . . 3 3 3 3 2 2 1 1 3 3 3 . .
+        .DB      $0F,$6D,$57,$FC   ; . . 3 3 1 2 3 1 1 1 1 3 3 3 3 .
+        .DB      $0F,$5F,$FF,$FF   ; . . 3 3 1 1 3 3 3 3 3 3 3 3 3 3
+        .DB      $0F,$9F,$FF,$FF   ; . . 3 3 2 1 3 3 3 3 3 3 3 3 3 3
+        .DB      $0F,$6E,$97,$FC   ; . . 3 3 1 2 3 2 2 1 1 3 3 3 3 .
+        .DB      $03,$FD,$57,$F0   ; . . . 3 3 3 3 1 1 1 1 3 3 3 . .
+        .DB      $AB,$FF,$FF,$C0   ; 2 2 2 3 3 3 3 3 3 3 3 3 3 . . .
+        .DB      $83,$FF,$FC,$10   ; 2 . . 3 3 3 3 3 3 3 3 . . 1 . .
+        .DB      $80,$FF,$00,$04   ; 2 . . . 3 3 3 3 . . . . . . 1 .
+		
+;*******************************************************************************
+; GORF_EXPLODE_SMALL
+; 3 bytes/row = 12 pixels wide, 12 rows
+; Sprite bitmap size: 36 bytes ($24)
+; Object total size: 38 bytes ($26), including 2-byte width/height header
+; Pixel values: . = 0, 1 = color 1, 2 = color 2, 3 = color 3
+;*******************************************************************************
+GORF_EXPLODE_SMALL:
+        .DB      $03,$0C           ; width bytes, height rows
+        .DB      $00,$C0,$04       ; . . . . 3 . . . . . 1 .
+        .DB      $C0,$F3,$00       ; 3 . . . 3 3 . 3 . . . .
+        .DB      $3F,$FF,$0C       ; . 3 3 3 3 3 3 3 . . 3 .
+        .DB      $0F,$FF,$FC       ; . . 3 3 3 3 3 3 3 3 3 .
+        .DB      $0F,$DF,$7F       ; . . 3 3 3 1 3 3 1 3 3 3
+        .DB      $FF,$55,$7C       ; 3 3 3 3 1 1 1 1 1 3 3 .
+        .DB      $FD,$55,$7C       ; 3 3 3 1 1 1 1 1 1 3 3 .
+        .DB      $3F,$F5,$7C       ; . 3 3 3 3 3 1 1 1 3 3 .
+        .DB      $0F,$3F,$F0       ; . . 3 3 . 3 3 3 3 3 . .
+        .DB      $4C,$0F,$C1       ; 1 . 3 . . . 3 3 3 . . 1
+        .DB      $00,$0F,$C0       ; . . . . . . 3 3 3 . . .
+        .DB      $00,$03,$00       ; . . . . . . . 3 . . . .
 
-;
-;******************************************************************************************
-;
-; Gorf: Miniscule - probably from Space Warp screen
-;
-;******************************************************************************************
-;
-	DB	$02, $03		; Width and Height of object
+;*******************************************************************************
+; GORK_UNK
+; 4 bytes/row = 16 pixels wide, 17 rows
+; Sprite bitmap size: 68 bytes ($44)
+; Object total size: 70 bytes ($46), including 2-byte width/height header
+;*******************************************************************************
+GORK_UNK:
+        .DB      $04,$11           ; width bytes, height rows
+        .DB      $01,$00,$00,$00   ; . . . 1 . . . . . . . . . . . .
+        .DB      $00,$40,$00,$00   ; . . . . 1 . . . . . . . . . . .
+        .DB      $00,$54,$00,$00   ; . . . . 1 1 1 . . . . . . . . .
+        .DB      $00,$14,$04,$00   ; . . . . . 1 1 . . . 1 . . . . .
+        .DB      $00,$15,$54,$00   ; . . . . . 1 1 1 1 1 1 . . . . .
+        .DB      $00,$1D,$54,$14   ; . . . . . 1 3 1 1 1 1 . . 1 1 .
+        .DB      $00,$5F,$D5,$55   ; . . . . 1 1 3 3 3 1 1 1 1 1 1 1
+        .DB      $00,$5F,$FF,$F5   ; . . . . 1 1 3 3 3 3 3 3 3 3 1 1
+        .DB      $C1,$7F,$FF,$F4   ; 3 . . 1 1 3 3 3 3 3 3 3 3 3 1 .
+        .DB      $15,$7F,$FF,$D4   ; . 1 1 1 1 3 3 3 3 3 3 3 3 1 1 .
+        .DB      $15,$FF,$FF,$D4   ; . 1 1 1 3 3 3 3 3 3 3 3 3 1 1 .
+        .DB      $05,$FF,$FF,$F5   ; . . 1 1 3 3 3 3 3 3 3 3 3 3 1 1
+        .DB      $05,$F5,$FD,$F4   ; . . 1 1 3 3 1 1 3 3 3 1 3 3 1 .
+        .DB      $00,$55,$55,$54   ; . . . . 1 1 1 1 1 1 1 1 1 1 1 .
+        .DB      $05,$14,$14,$45   ; . . 1 1 . 1 1 . . 1 1 . 1 . 1 1
+        .DB      $04,$00,$00,$40   ; . . 1 . . . . . . . . . 1 . . .
+        .DB      $50,$00,$00,$40   ; 1 1 . . . . . . . . . . 1 . . .
 
-	DB	$8F, $00
-	DB	$37, $C0
-	DB	$8F, $00
+;*******************************************************************************
+; GORF_LINE
+; 3 bytes/row = 12 pixels wide, 1 rows
+; Sprite bitmap size: 3 bytes ($3)
+; Object total size: 5 bytes ($5), including 2-byte width/height header
+;*******************************************************************************
+GORF_LINE:
+        .DB      $03,$01           ; width bytes, height rows
+        .DB      $55,$55,$55       ; 1 1 1 1 1 1 1 1 1 1 1 1;
 
-;
-;******************************************************************************************
-;
-; Gorf: Very small - probably from Space Warp screen
-;
-;******************************************************************************************
-;
-	DB	$03, $09		; Width and Height of object
+;*******************************************************************************
+; GORF_LINE2
+; 1 bytes/row = 4 pixels wide, 1 rows
+; Sprite bitmap size: 1 bytes ($1)
+; Object total size: 3 bytes ($3), including 2-byte width/height header
+;*******************************************************************************
+GORF_LINE2:
+        .DB      $01,$01           ; width bytes, height rows
+        .DB      $00               ; . . . .
 
-	DB	$83, $F0, $01
-	DB	$8F, $FF, $04
-	DB	$AF, $FF, $F0
-	DB	$0E, $E5, $FC
-	DB	$0D, $FF, $FC
-	DB	$0E, $E5, $FC
-	DB	$AF, $FF, $F0
-	DB	$8F, $FF, $04
-	DB	$83, $F0, $01
+;*******************************************************************************
+; GORF_EXPLODE
+; 6 bytes/row = 24 pixels wide, 23 rows
+; Sprite bitmap size: 138 bytes ($8A)
+; Object total size: 140 bytes ($8C), including 2-byte width/height header
+;*******************************************************************************
+GORF_EXPLODE:
+        .DB      $06,$17           ; width bytes, height rows
+        .DB      $00,$00,$80,$00,$00,$00 ; . . . . . . . . 2 . . . . . . . . . . . . . . .
+        .DB      $00,$02,$60,$00,$00,$00 ; . . . . . . . 2 1 2 . . . . . . . . . . . . . .
+        .DB      $00,$A9,$58,$00,$00,$00 ; . . . . 2 2 2 1 1 1 2 . . . . . . . . . . . . .
+        .DB      $02,$55,$56,$0A,$00,$00 ; . . . 2 1 1 1 1 1 1 1 2 . . 2 2 . . . . . . . .
+        .DB      $0B,$DF,$F5,$A6,$80,$00 ; . . 2 3 3 1 3 3 3 3 1 1 2 2 1 2 2 . . . . . . .
+        .DB      $25,$FF,$FD,$7D,$60,$00 ; . 2 1 1 3 3 3 3 3 3 3 1 1 3 3 1 1 2 . . . . . .
+        .DB      $09,$7F,$FF,$FD,$58,$00 ; . . 2 1 1 3 3 3 3 3 3 3 3 3 3 1 1 1 2 . . . . .
+        .DB      $02,$FF,$FF,$FF,$56,$00 ; . . . 2 3 3 3 3 3 3 3 3 3 3 3 3 1 1 1 2 . . . .
+        .DB      $00,$BF,$FF,$FF,$D5,$80 ; . . . . 2 3 3 3 3 3 3 3 3 3 3 3 3 1 1 1 2 . . .
+        .DB      $02,$5F,$FF,$FF,$FD,$60 ; . . . 2 1 1 3 3 3 3 3 3 3 3 3 3 3 3 3 1 1 2 . .
+        .DB      $09,$7F,$FF,$FF,$F5,$80 ; . . 2 1 1 3 3 3 3 3 3 3 3 3 3 3 3 3 1 1 2 . . .
+        .DB      $25,$FF,$FF,$FF,$D6,$00 ; . 2 1 1 3 3 3 3 3 3 3 3 3 3 3 3 3 1 1 2 . . . .
+        .DB      $A5,$FF,$FF,$FF,$58,$00 ; 2 2 1 1 3 3 3 3 3 3 3 3 3 3 3 3 1 1 2 . . . . .
+        .DB      $25,$5F,$FF,$F5,$58,$00 ; . 2 1 1 1 1 3 3 3 3 3 3 3 3 1 1 1 1 2 . . . . .
+        .DB      $09,$FF,$FF,$FD,$A0,$00 ; . . 2 1 3 3 3 3 3 3 3 3 3 3 3 1 2 2 . . . . . .
+        .DB      $02,$FB,$FF,$FE,$00,$00 ; . . . 2 3 3 2 3 3 3 3 3 3 3 3 2 . . . . . . . .
+        .DB      $00,$ED,$FF,$FE,$00,$00 ; . . . . 3 2 3 1 3 3 3 3 3 3 3 2 . . . . . . . .
+        .DB      $00,$9F,$FF,$FE,$A0,$00 ; . . . . 2 1 3 3 3 3 3 3 3 3 3 2 2 2 . . . . . .
+        .DB      $02,$57,$DF,$FD,$58,$00 ; . . . 2 1 1 1 3 3 1 3 3 3 3 3 1 1 1 2 . . . . .
+        .DB      $00,$95,$5B,$75,$60,$00 ; . . . . 2 1 1 1 1 1 2 3 1 3 1 1 1 2 . . . . . .
+        .DB      $00,$25,$62,$55,$80,$00 ; . . . . . 2 1 1 1 2 . 2 1 1 1 1 2 . . . . . . .
+        .DB      $00,$09,$80,$96,$00,$00 ; . . . . . . 2 1 2 . . . 2 1 1 2 . . . . . . . .
+        .DB      $00,$02,$00,$28,$00,$00 ; . . . . . . . 2 . . . . . 2 2 . . . . . . . . .
 
-;
-;******************************************************************************************
-;
-; Gorf: Small
-;
-;******************************************************************************************
-;
-	DB	$04, $0C		; Width and Height of object
+;*******************************************************************************
+; GORK_EXPLODE2
+; 5 bytes/row = 20 pixels wide, 22 rows
+; Sprite bitmap size: 110 bytes ($6E)
+; Object total size: 112 bytes ($70), including 2-byte width/height header
+;*******************************************************************************
+GORK_EXPLODE2:
+        .DB      $05,$16           ; width bytes, height rows
+        .DB      $80,$00,$08,$00,$00 ; 2 . . . . . . . . . 2 . . . . . . . . .
+        .DB      $20,$00,$20,$00,$02 ; . 2 . . . . . . . 2 . . . . . . . . . 2
+        .DB      $08,$00,$80,$00,$08 ; . . 2 . . . . . 2 . . . . . . . . . 2 .
+        .DB      $02,$00,$80,$00,$20 ; . . . 2 . . . . 2 . . . . . . . . 2 . .
+        .DB      $00,$A2,$A1,$40,$80 ; . . . . 2 2 . 2 2 2 . 1 1 . . . 2 . . .
+        .DB      $00,$2B,$7E,$52,$00 ; . . . . . 2 2 3 1 3 3 2 1 1 . 2 . . . .
+        .DB      $00,$AF,$FF,$94,$02 ; . . . . 2 2 3 3 3 3 3 3 2 1 1 . . . . 2
+        .DB      $00,$2D,$FF,$F4,$08 ; . . . . . 2 3 1 3 3 3 3 3 3 1 . . . 2 .
+        .DB      $00,$2B,$7F,$D5,$A0 ; . . . . . 2 2 3 1 3 3 3 3 1 1 1 2 2 . .
+        .DB      $00,$0B,$7F,$D8,$00 ; . . . . . . 2 3 1 3 3 3 3 1 2 . . . . .
+        .DB      $00,$AB,$7F,$DA,$00 ; . . . . 2 2 2 3 1 3 3 3 3 1 2 2 . . . .
+        .DB      $02,$BD,$FF,$F6,$00 ; . . . 2 2 3 3 1 3 3 3 3 3 3 1 2 . . . .
+        .DB      $0A,$DF,$FF,$E8,$00 ; . . 2 2 3 1 3 3 3 3 3 3 3 2 2 . . . . .
+        .DB      $2B,$D7,$FF,$60,$00 ; . 2 2 3 3 1 1 3 3 3 3 3 1 2 . . . . . .
+        .DB      $02,$B5,$FD,$68,$00 ; . . . 2 2 3 1 1 3 3 3 1 1 2 2 . . . . .
+        .DB      $02,$AF,$FD,$FA,$00 ; . . . 2 2 2 3 3 3 3 3 1 3 3 2 2 . . . .
+        .DB      $08,$2E,$AF,$F8,$00 ; . . 2 . . 2 3 2 2 2 3 3 3 3 2 . . . . .
+        .DB      $20,$28,$2B,$EA,$00 ; . 2 . . . 2 2 . . 2 2 3 3 2 2 2 . . . .
+        .DB      $80,$00,$0A,$A2,$80 ; 2 . . . . . . . . . 2 2 2 2 . 2 2 . . .
+        .DB      $00,$00,$08,$00,$20 ; . . . . . . . . . . 2 . . . . . . 2 . .
+        .DB      $00,$00,$20,$00,$08 ; . . . . . . . . . 2 . . . . . . . . 2 .
+        .DB      $00,$00,$80,$00,$02 ; . . . . . . . . 2 . . . . . . . . . . 2
 
-	DB	$80, $FF, $00, $04
-	DB	$83, $FF, $FC, $10
-	DB	$AB, $FF, $FF, $C0
-	DB	$03, $FE, $97, $F0
-	DB	$0F, $6D, $57, $FC
-	DB	$0F, $5F, $FF, $FF
-	DB	$0F, $9F, $FF, $FF
-	DB	$0F, $6E, $97, $FC
-	DB	$03, $FD, $57, $F0
-	DB	$AB, $FF, $FF, $C0
-	DB	$83, $FF, $FC, $10
-	DB	$80, $FF, $00, $04
-;
-;******************************************************************************************
-;
-; Explosion: Small
-;
-;******************************************************************************************
-;
-	DB	$03, $0C		; Width and Height of object
+;*******************************************************************************
+; GORK_EXPLODE3
+; 5 bytes/row = 20 pixels wide, 23 rows
+; Sprite bitmap size: 115 bytes ($73)
+; Object total size: 117 bytes ($75), including 2-byte width/height header
+;*******************************************************************************
+GORK_EXPLODE3:
+        .DB      $05,$17           ; width bytes, height rows
+        .DB      $00,$00,$04,$03,$00 ; . . . . . . . . . . 1 . . . . 3 . . . .
+        .DB      $00,$30,$41,$40,$30 ; . . . . . 3 . . 1 . . 1 1 . . . . 3 . .
+        .DB      $00,$8C,$20,$08,$00 ; . . . . 2 . 3 . . 2 . . . . 2 . . . . .
+        .DB      $00,$00,$01,$00,$00 ; . . . . . . . . . . . 1 . . . . . . . .
+        .DB      $30,$90,$80,$C0,$20 ; . 3 . . 2 1 . . 2 . . . 3 . . . . 2 . .
+        .DB      $0C,$20,$02,$00,$0F ; . . 3 . . 2 . . . . . 2 . . . . . . 3 3
+        .DB      $30,$08,$28,$0C,$30 ; . 3 . . . . 2 . . 2 2 . . . 3 . . 3 . .
+        .DB      $00,$00,$30,$00,$03 ; . . . . . . . . . 3 . . . . . . . . . 3
+        .DB      $0F,$C2,$A0,$14,$05 ; . . 3 3 3 . . 2 2 2 . . . 1 1 . . . 1 1
+        .DB      $03,$C1,$80,$50,$1A ; . . . 3 3 . . 1 2 . . . 1 1 . . . 1 2 2
+        .DB      $0F,$A1,$A1,$44,$4A ; . . 3 3 2 2 . 1 2 2 . 1 1 . 1 . 1 . 2 2
+        .DB      $F0,$29,$85,$50,$54 ; 3 3 . . . 2 2 1 2 . 1 1 1 1 . . 1 1 1 .
+        .DB      $FC,$0A,$81,$54,$50 ; 3 3 3 . . . 2 2 2 . . 1 1 1 1 . 1 1 . .
+        .DB      $0C,$80,$2A,$90,$00 ; . . 3 . 2 . . . . 2 2 2 2 1 . . . . . .
+        .DB      $0F,$54,$08,$48,$50 ; . . 3 3 1 1 1 . . . 2 . 1 . 2 . 1 1 . .
+        .DB      $30,$14,$20,$40,$10 ; . 3 . . . 1 1 . . 2 . . 1 . . . . 1 . .
+        .DB      $01,$03,$0C,$04,$0C ; . . . 1 . . . 3 . . 3 . . . 1 . . . 3 .
+        .DB      $00,$10,$00,$00,$40 ; . . . . . 1 . . . . . . . . . . 1 . . .
+        .DB      $20,$00,$04,$00,$00 ; . 2 . . . . . . . . 1 . . . . . . . . .
+        .DB      $01,$0C,$00,$0C,$04 ; . . . 1 . . 3 . . . . . . . 3 . . . 1 .
+        .DB      $00,$00,$08,$00,$00 ; . . . . . . . . . . 2 . . . . . . . . .
+        .DB      $00,$04,$00,$10,$C0 ; . . . . . . 1 . . . . . . 1 . . 3 . . .
+        .DB      $00,$00,$12,$0C,$00 ; . . . . . . . . . 1 . 2 . . 3 . . . . .
 
-	DB	$00, $C0, $04
-	DB	$C0, $F3, $00
-	DB	$3F, $FF, $0C
-	DB	$0F, $FF, $FC
-	DB	$0F, $DF, $7F
-	DB	$FF, $55, $7C
-	DB	$FD, $55, $7C
-	DB	$3F, $F5, $7C
-	DB	$0F, $3F, $F0
-	DB	$4C, $0F, $C1
-	DB	$00, $0F, $C0
-	DB	$00, $03, $00
+;*******************************************************************************
+; GORK_EXPLODE4
+; 5 bytes/row = 20 pixels wide, 23 rows
+; Sprite bitmap size: 115 bytes ($73)
+; Object total size: 117 bytes ($75), including 2-byte width/height header
+;*******************************************************************************
+GORK_EXPLODE4:
+        .DB      $05,$17           ; width bytes, height rows
+        .DB      $00,$00,$C0,$00,$00 ; . . . . . . . . 3 . . . . . . . . . . .
+        .DB      $00,$08,$00,$30,$00 ; . . . . . . 2 . . . . . . 3 . . . . . .
+        .DB      $00,$00,$30,$00,$04 ; . . . . . . . . . 3 . . . . . . . . 1 .
+        .DB      $01,$00,$00,$20,$00 ; . . . 1 . . . . . . . . . 2 . . . . . .
+        .DB      $00,$00,$00,$00,$00 ; . . . . . . . . . . . . . . . . . . . .
+        .DB      $02,$04,$0D,$01,$20 ; . . . 2 . . 1 . . . 3 1 . . . 1 . 2 . .
+        .DB      $02,$00,$40,$00,$00 ; . . . 2 . . . . 1 . . . . . . . . . . .
+        .DB      $00,$30,$01,$08,$00 ; . . . . . 3 . . . . . 1 . . 2 . . . . .
+        .DB      $10,$00,$00,$80,$00 ; . 1 . . . . . . . . . . 2 . . . . . . .
+        .DB      $01,$02,$00,$01,$30 ; . . . 1 . . . 2 . . . . . . . 1 . 3 . .
+        .DB      $C0,$00,$08,$00,$03 ; 3 . . . . . . . . . 2 . . . . . . . . 3
+        .DB      $08,$20,$00,$0C,$04 ; . . 2 . . 2 . . . . . . . . 3 . . . 1 .
+        .DB      $00,$01,$22,$00,$80 ; . . . . . . . 1 . 2 . 2 . . . . 2 . . .
+        .DB      $8C,$40,$00,$33,$00 ; 2 . 3 . 1 . . . . . . . . 3 . 3 . . . .
+        .DB      $01,$00,$20,$03,$01 ; . . . 1 . . . . . 2 . . . . . 3 . . . 1
+        .DB      $40,$04,$03,$10,$08 ; 1 . . . . . 1 . . . . 3 . 1 . . . . 2 .
+        .DB      $00,$00,$40,$00,$00 ; . . . . . . . . 1 . . . . . . . . . . .
+        .DB      $0C,$30,$00,$00,$20 ; . . 3 . . 3 . . . . . . . . . . . 2 . .
+        .DB      $00,$00,$00,$00,$00 ; . . . . . . . . . . . . . . . . . . . .
+        .DB      $00,$C4,$00,$40,$20 ; . . . . 3 . 1 . . . . . 1 . . . . 2 . .
+        .DB      $00,$10,$20,$03,$00 ; . . . . . 1 . . . 2 . . . . . 3 . . . .
+        .DB      $00,$03,$04,$00,$00 ; . . . . . . . 3 . . 1 . . . . . . . . .
+        .DB      $00,$01,$08,$40,$00 ; . . . . . . . 1 . . 2 . 1 . . . . . . .
 
-;
-;******************************************************************************************
-;
-; Unknown pattern
-;
-;******************************************************************************************
-;
+;*******************************************************************************
+; GORK_UNK2
+; 2 bytes/row = 8 pixels wide, 11 rows
+; Sprite bitmap size: 22 bytes ($16)
+; Object total size: 24 bytes ($18), including 2-byte width/height header
+;*******************************************************************************
+GORK_UNK2:
+        .DB      $02,$0B           ; width bytes, height rows
+        .DB      $00,$00           ; . . . . . . . .
+        .DB      $00,$00           ; . . . . . . . .
+        .DB      $00,$04           ; . . . . . . 1 .
+        .DB      $10,$C0           ; . 1 . . 3 . . .
+        .DB      $0F,$FC           ; . . 3 3 3 3 3 .
+        .DB      $03,$70           ; . . . 3 1 3 . .
+        .DB      $0D,$5C           ; . . 3 1 1 1 3 .
+        .DB      $0F,$7C           ; . . 3 3 1 3 3 .
+        .DB      $13,$C0           ; . 1 . 3 3 . . .
+        .DB      $00,$04           ; . . . . . . 1 .
+        .DB      $00,$00           ; . . . . . . . .
 
-	inc	b
-	ld	de,$0001
-	nop
-	nop
-	nop
-	ld	b,b
-	nop
-	nop
-	nop
-	ld	d,h
-	nop
-	nop
-	nop
-	inc	d
-	inc	b
-	nop
-	nop
-	dec	d
-	ld	d,h
-	nop
-	nop
-	dec	e
-	ld	d,h
-	inc	d
-	nop
-	ld	e,a
-	push	de
-	ld	d,l
-	nop
-	ld	e,a
-	rst	$38
-	push	af
-	pop	bc
-	ld	a,a
-	rst	$38
-	call	p,$7F15
-	rst	$38
-	call	nc,$FF15
-	rst	$38
-	call	nc,$FF05
-	rst	$38
-	push	af
-	dec	b
-	push	af
-	DB	$fd,$f4
-	nop
-	ld	d,l
-	ld	d,l
-	ld	d,h
-	dec	b
-	inc	d
-	inc	d
-	ld	b,l
-	inc	b
-	nop
-	nop
-	ld	b,b
-	ld	d,b
-	nop
-	nop
-	ld	b,b
-	inc	bc
-	ld	bc,$5555
-	ld	d,l
-;
-;******************************************************************************************
-;
-; Unknown Pattern ???
-;
-;******************************************************************************************
-;
-	ld	bc,$0001
-	ld	b,$17
-	nop
-	nop
-	add	a,b
-	nop
-	nop
-	nop
-	nop
-	ld	(bc),a
-	ld	h,b
-	nop
-	nop
-	nop
-	nop
-	xor	c
-	ld	e,b
-	nop
-	nop
-	nop
-	ld	(bc),a
-	ld	d,l
-	ld	d,(hl)
-	ld	a,(bc)
-	nop
-	nop
-	dec	bc
-	rst	$18
-	push	af
-	and	(hl)
-	add	a,b
-	nop
-	dec	h
-	rst	$38
-	DB	$fd, $7d
-	ld	h,b
-	nop
-	add	hl,bc
-	ld	a,a
-	rst	$38
-	DB	$fd,$58
-	nop
-	ld	(bc),a
-	rst	$38
-	rst	$38
-	rst	$38
-	ld	d,(hl)
-	nop
-	nop
-	cp	a
-	rst	$38
-	rst	$38
-	push	de
-	add	a,b
-	ld	(bc),a
-	ld	e,a
-	rst	$38
-	rst	$38
-	DB	$fd, $60
-	add	hl,bc
-	ld	a,a
-	rst	$38
-	rst	$38
-	push	af
-	add	a,b
-	dec	h
-	rst	$38
-	rst	$38
-	rst	$38
-	sub	$00
-	and	l
-	rst	$38
-	rst	$38
-	rst	$38
-	ld	e,b
-	nop
-	dec	h
-	ld	e,a
-	rst	$38
-	push	af
-	ld	e,b
-	nop
-	add	hl,bc
-	rst	$38
-	rst	$38
-	DB	$fd,$a0
-	nop
-	ld	(bc),a
-	ei
-	rst	$38
-	cp	$00
-	nop
-	nop
-	DB	$ed,$ff
-	cp	$00
-	nop
-	nop
-	sbc	a,a
-	rst	$38
-	cp	$A0
-	nop
-	ld	(bc),a
-	ld	d,a
-	rst	$18
-	DB	$fd,$58
-	nop
-	nop
-	sub	l
-	ld	e,e
-	ld	(hl),l
-	ld	h,b
-	nop
-	nop
-	dec	h
-	ld	h,d
-	ld	d,l
-	add	a,b
-	nop
-	nop
-	add	hl,bc
-	add	a,b
-	sub	(hl)
-	nop
-	nop
-	nop
-	ld	(bc),a
-	nop
-	jr	z,$2494
-	nop
-	dec	b
-	ld	d,$80
-	nop
-	ex	af,af'
-	nop
-	nop
-	jr	nz,$249E
-	jr	nz,$24A0
-	ld	(bc),a
-	ex	af,af'
-	nop
-	add	a,b
-	nop
-	ex	af,af'
-	ld	(bc),a
-	nop
-	add	a,b
-	nop
-	jr	nz,$24AC
-	and	d
-	and	c
-	ld	b,b
-	add	a,b
-	nop
-	dec	hl
-	ld	a,(hl)
-	ld	d,d
-	nop
-	nop
-	xor	a
-	rst	$38
-	sub	h
-	ld	(bc),a
-	nop
-	dec	l
-	rst	$38
-	call	p,$0008
-	dec	hl
-	ld	a,a
-	push	de
-	and	b
-	nop
-	dec	bc
-	ld	a,a
-	ret	c
-	nop
-	nop
-	xor	e
-	ld	a,a
-	jp	c,$0200
-	cp	l
-	rst	$38
-	or	$00
-	ld	a,(bc)
-	rst	$18
-	rst	$38
-	ret	pe
-	nop
-	dec	hl
-	rst	$10
-	rst	$38
-	ld	h,b
-	nop
-	ld	(bc),a
-	or	l
-	DB	$fd, $68
-	nop
-	ld	(bc),a
-	xor	a
-	DB	$fd,$fa
-	nop
-	ex	af,af'
-	ld	l,$AF
-	ret	m
-	nop
-	jr	nz,$2516
-	dec	hl
-	jp	pe,L8000
-	nop
-	ld	a,(bc)
-	and	d
-	add	a,b
-	nop
-	nop
-	ex	af,af'
-	nop
-	jr	nz,$24FC
-	nop
-	jr	nz,$24FF
-	ex	af,af'
-	nop
-	nop
-	add	a,b
-	nop
-	ld	(bc),a
-	dec	b
-	rla
-	nop
-	nop
-	inc	b
-	inc	bc
-	nop
-	nop
-	jr	nc,$2550
-	ld	b,b
-	jr	nc,$2512
-	adc	a,h
-	jr	nz,$251D
-	nop
-	nop
-	nop
-	ld	bc,$0000
-	jr	nc,$24AD
-	add	a,b
-	ret	nz
-	jr	nz,$252D
-	jr	nz,$2525
-	nop
-	rrca
-	jr	nc,$252F
-	jr	z,$2535
-	jr	nc,$252B
-	nop
-	jr	nc,$252E
-	inc	bc
-	rrca
-	jp	nz,$14A0
-	dec	b
-	inc	bc
-	pop	bc
-	add	a,b
-	ld	d,b
-	ld	a,(de)
-	rrca
-	and	c
-	and	c
-	ld	b,h
-	ld	c,d
-	ret	p
-	add	hl,hl
-	add	a,l
-	ld	d,b
-	ld	d,h
-	call	m,$810A
-	ld	d,h
-	ld	d,b
-	inc	c
-	add	a,b
-	ld	hl,($0090)
-	rrca
-	ld	d,h
-	ex	af,af'
-	ld	c,b
-	ld	d,b
-	jr	nc,$2568
-	jr	nz,$2596
-	djnz	$2559
-	inc	bc
-	inc	c
-	inc	b
-	inc	c
-	nop
-	djnz	$255F
-	nop
-	ld	b,b
-	jr	nz,$2563
-	inc	b
-	nop
-	nop
-	ld	bc,$000C
-	inc	c
-	inc	b
-	nop
-	nop
-	ex	af,af'
-	nop
-	nop
-	nop
-	inc	b
-	nop
-	djnz	$2535
-	nop
-	nop
-	ld	(de),a
-	inc	c
-	nop
-	dec	b
-	rla
-	nop
-	nop
-	ret	nz
-	nop
-	nop
-	nop
-	ex	af,af'
-	nop
-	jr	nc,$2586
-	nop
-	nop
-	jr	nc,$258A
-	inc	b
-	ld	bc,$0000
-	jr	nz,$2590
-	nop
-	nop
-	nop
-	nop
-	nop
-	ld	(bc),a
-	inc	b
-	dec	c
-	ld	bc,$0220
-	nop
-	ld	b,b
-	nop
-	nop
-	nop
-	jr	nc,$25A3
-	ex	af,af'
-	nop
-	djnz	$25A6
-	nop
-	add	a,b
-	nop
-	ld	bc,$0002
-	ld	bc,$C030
-	nop
-	ex	af,af'
-	nop
-	inc	bc
-	ex	af,af'
-	jr	nz,$25B6
-	inc	c
-	inc	b
-	nop
-	ld	bc,$0022
-	add	a,b
-	adc	a,h
-	ld	b,b
-	nop
-	inc	sp
-	nop
-	ld	bc,$2000
-	inc	bc
-	ld	bc,$0440
-	inc	bc
-	djnz	$25D4
-	nop
-	nop
-	ld	b,b
-	nop
-	nop
-	inc	c
-	jr	nc,$25D4
-	nop
-	jr	nz,$25D7
-	nop
-	nop
-	nop
-	nop
-	nop
-	call	nz,$4000
-	jr	nz,$25E1
-	djnz	$2603
-	inc	bc
-	nop
-	nop
-	inc	bc
-	inc	b
-	nop
-	nop
-	nop
-	ld	bc,$4008
-	nop
-	ld	(bc),a
-	dec	bc
-	nop
-	nop
-	nop
-	nop
-	nop
-	inc	b
-	djnz	$25B9
-	rrca
-	call	m,$7003
-	dec	c
-	ld	e,h
-	rrca
-	ld	a,h
-	inc	de
-	ret	nz
-	nop
-	inc	b
-	nop
-	nop
-	ld	(bc),a
-	dec	bc
-	ld	b,c
-	ld	bc,$4410
-	dec	b
-	ld	d,b
-	dec	d
-	push	de
-	rlca
-	call	p,$D445
-	rla
-	ld	d,b
-	dec	b
-	dec	d
-	ld	de,$0014
-	inc	b
-	ld	b,b
-	ld	b,c
-	ld	(bc),a
-	inc	c
-	nop
-	ld	de,$0040
-	inc	b
-	nop
-	nop
-	ret	nz
-	inc	bc
-	pop	af
-	rrca
-	or	c
-	inc	bc
-	or	b
-	inc	bc
-	call	m,$C010
-	nop
-	nop
-	ld	bc,$0000
-	inc	b
-	ld	(bc),a
-	dec	bc
-	pop	bc
-	ex	af,af'
-	pop	bc
-	inc	c
-	jr	nc,$2671
-	ld	bc,$1543
-	ld	d,b
-	sub	h
-	ld	d,d
-	ld	de,$1540
-	ld	d,c
-	add	a,c
-	nop
-	pop	bc
-	jr	z,$2658
-	ld	de,$0B02
-	nop
-	inc	b
-	jr	nz,$2657
-	nop
-	jr	nc,$265A
-	nop
-	add	a,b
-	inc	b
-	inc	c
-	ld	b,$00
-	ld	b,b
-	djnz	$2663
-	ex	af,af'
-	adc	a,h
-	ret	nz
-	nop
-	ld	(bc),a
-	ld	bc,$1513
+;*******************************************************************************
+; GORK_UNK3
+; 2 bytes/row = 8 pixels wide, 11 rows
+; Sprite bitmap size: 22 bytes ($16)
+; Object total size: 24 bytes ($18), including 2-byte width/height header
+;*******************************************************************************
+GORK_UNK3:
+        .DB      $02,$0B           ; width bytes, height rows
+        .DB      $41,$01           ; 1 . . 1 . . . 1
+        .DB      $10,$44           ; . 1 . . 1 . 1 .
+        .DB      $05,$50           ; . . 1 1 1 1 . .
+        .DB      $15,$D5           ; . 1 1 1 3 1 1 1
+        .DB      $07,$F4           ; . . 1 3 3 3 1 .
+        .DB      $45,$D4           ; 1 . 1 1 3 1 1 .
+        .DB      $17,$50           ; . 1 1 3 1 1 . .
+        .DB      $05,$15           ; . . 1 1 . 1 1 1
+        .DB      $11,$14           ; . 1 . 1 . 1 1 .
+        .DB      $00,$04           ; . . . . . . 1 .
+        .DB      $40,$41           ; 1 . . . 1 . . 1
+
+;*******************************************************************************
+; GORK_UNK4
+; 2 bytes/row = 8 pixels wide, 12 rows
+; Sprite bitmap size: 24 bytes ($18)
+; Object total size: 26 bytes ($1A), including 2-byte width/height header
+;*******************************************************************************
+GORK_UNK4:
+        .DB      $02,$0C           ; width bytes, height rows
+        .DB      $00,$11           ; . . . . . 1 . 1
+        .DB      $40,$00           ; 1 . . . . . . .
+        .DB      $04,$00           ; . . 1 . . . . .
+        .DB      $00,$C0           ; . . . . 3 . . .
+        .DB      $03,$F1           ; . . . 3 3 3 . 1
+        .DB      $0F,$B1           ; . . 3 3 2 3 . 1
+        .DB      $03,$B0           ; . . . 3 2 3 . .
+        .DB      $03,$FC           ; . . . 3 3 3 3 .
+        .DB      $10,$C0           ; . 1 . . 3 . . .
+        .DB      $00,$00           ; . . . . . . . .
+        .DB      $01,$00           ; . . . 1 . . . .
+        .DB      $00,$04           ; . . . . . . 1 .
+
+;*******************************************************************************
+; GORK_UNK5
+; 2 bytes/row = 8 pixels wide, 11 rows
+; Sprite bitmap size: 22 bytes ($16)
+; Object total size: 24 bytes ($18), including 2-byte width/height header
+;*******************************************************************************
+GORK_UNK5:
+        .DB      $02,$0B           ; width bytes, height rows
+        .DB      $C1,$08           ; 3 . . 1 . . 2 .
+        .DB      $C1,$0C           ; 3 . . 1 . . 3 .
+        .DB      $30,$30           ; . 3 . . . 3 . .
+        .DB      $01,$43           ; . . . 1 1 . . 3
+        .DB      $15,$50           ; . 1 1 1 1 1 . .
+        .DB      $94,$52           ; 2 1 1 . 1 1 . 2
+        .DB      $11,$40           ; . 1 . 1 1 . . .
+        .DB      $15,$51           ; . 1 1 1 1 1 . 1
+        .DB      $81,$00           ; 2 . . 1 . . . .
+        .DB      $C1,$28           ; 3 . . 1 . 2 2 .
+        .DB      $08,$11           ; . . 2 . . 1 . 1
+
+;*******************************************************************************
+; GORK_UNK6
+; 2 bytes/row = 8 pixels wide, 11 rows
+; Sprite bitmap size: 22 bytes ($16)
+; Object total size: 24 bytes ($18), including 2-byte width/height header
+;*******************************************************************************
+GORK_UNK6:
+        .DB      $02,$0B           ; width bytes, height rows
+        .DB      $00,$04           ; . . . . . . 1 .
+        .DB      $20,$00           ; . 2 . . . . . .
+        .DB      $00,$30           ; . . . . . 3 . .
+        .DB      $00,$00           ; . . . . . . . .
+        .DB      $80,$04           ; 2 . . . . . 1 .
+        .DB      $0C,$06           ; . . 3 . . . 1 2
+        .DB      $00,$40           ; . . . . 1 . . .
+        .DB      $10,$00           ; . 1 . . . . . .
+        .DB      $08,$8C           ; . . 2 . 2 . 3 .
+        .DB      $C0,$00           ; 3 . . . . . . .
+        .DB      $02,$01           ; . . . 2 . . . 1
+
+;*******************************************************************************
+
 	ld	(de),a
 	add	a,a
 	ld	de,$0FA0
