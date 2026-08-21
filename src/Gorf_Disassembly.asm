@@ -3507,14 +3507,14 @@ noiseport:  rrca
 ;        M A MOV, H INX, A PANTIMEBASE Y STX,
 ;        A PANTIMER Y STX, FF PANCOUNTER Y MVIX, A XRA, RET, )
 ;##########################################################################################
-soundmovin: ret                         ; Only a ret here
+soundmovin: ret                         ; Stereo pan opcode is disabled in Program 2
 
 ;##########################################################################################
 ;       SUBR PANLIMITCOUNTIN' ( 19 ) RET, -->
 ;       ( M A MOV, H INX, A PANCOUNTER Y STX,
 ;        PANTIMEBASE Y A LDX, A PANTIMER Y STX, A XRA, RET, )
 ;##########################################################################################
-panlimitcountin:    ret                 ; Only a ret here
+panlimitcountin:    ret                 ; Stereo pan-limit opcode is disabled in Program 2
 
 ;##########################################################################################
 ;       { BLOCK 0078 }
@@ -3686,7 +3686,20 @@ OPADDRESSES:
             DW      panlimitcountin     ; $19
             DW      volmovin            ; $1A
             DW      mohittin            ; $1B
-            xor     a
+
+;******************************************************************************************
+; ----> muscpu  Interrupt-time music processor update.
+;
+;               IY selects one of the two 48-byte processor work areas:
+;                   $D0B1 = processor 1 / Astrocade sound ports $10-$17
+;                   $D0E1 = processor 2 / Astrocade sound ports $50-$57
+;
+;               MST (IY+$2F) separates score interpretation from timed synthesis updates.
+;               While MST is clear, this routine advances timers, ramps, modulation, and
+;               noise motion and writes the resulting register values to the selected sound
+;               block. It raises MST when the score interpreter must consume another opcode.
+;******************************************************************************************
+muscpu:     xor     a
             cp      (iy+$2f)
             jp      z,$0D5C
             ret
@@ -3893,23 +3906,28 @@ OPADDRESSES:
             ld      (iy+$17),a
             ret
 
-;*******************************************************************
-
-            ld      a,(iy+$2f)
+;******************************************************************************************
+; ----> musinterp  Score-bytecode interpreter for the processor selected by IY.
+;
+;                  A non-zero MST requests score processing. MUSPC is loaded into HL and
+;                  opcodes $00-$1B dispatch through OPADDRESSES. Handlers returning zero
+;                  continue immediately with the next opcode; a non-zero return commits
+;                  MUSPC, clears MST, and returns control to the timed music processor.
+;******************************************************************************************
+musinterp:  ld      a,(iy+$2f)
             or      a
-            jp      nz,$0F30
+            jp      nz,process
             ret
 
-;*******************************************************************
-
-            ld      l,(iy+$00)
+process:    ld      l,(iy+$00)
             ld      h,(iy+$01)
+process_next_opcode:
             ld      a,(hl)
             inc     hl
-            cp      $1C
-            jp      nc,$0F53
+            cp      $1C                 ; Valid score opcodes are $00-$1B
+            jp      nc,process_bad_opcode
             exx
-            ld      hl,$0F55
+            ld      hl,endprocess
             push    hl
             ld      hl,OPADDRESSES
             rlca
@@ -3925,91 +3943,106 @@ OPADDRESSES:
 
 ;*******************************************************************
 
-            jp      $0F55
-            or      $01
-            or      a
-            jp      z,$0F36
-            ld      (iy+$00),l
+            jp      endprocess
+process_bad_opcode:
+            or      $01                 ; Invalid opcode terminates this interpreter pass
+endprocess: or      a
+            jp      z,process_next_opcode
+            ld      (iy+$00),l          ; Commit MUSPC returned by the opcode handler
             ld      (iy+$01),h
-            ld      (iy+$2f),$00
+musend:     ld      (iy+$2f),$00        ; MST=0: timed synthesis updates may run
             ret
 
-;*******************************************************************
-
-            ld      a,(MUSICFLAG)
+;******************************************************************************************
+; ----> muscpus  Run timed synthesis for both Astrocade sound blocks.
+;                MUSICFLAG gates the complete music/sound sequencer.
+;******************************************************************************************
+muscpus:    ld      a,(MUSICFLAG)
             or      a
-            jp      z,$0F7D
+            jp      z,muscpus_done
             push    iy
-            ld      iy,$D0B1
-            call    $0D54
-            ld      iy,$D0E1
-            call    $0D54
+            ld      iy,$D0B1            ; Processor 1 -> ports $10-$17
+            call    muscpu
+            ld      iy,$D0E1            ; Processor 2 -> ports $50-$57
+            call    muscpu
             pop     iy
+muscpus_done:
             ret
 
-;*******************************************************************
-; Source name recovered from Block 0248: busaround.
-
+;******************************************************************************************
+; ----> busaround  Advance pending score-bytecode work for both music processors.
+;                  Each musinterp call runs only when that processor's MST is non-zero.
+;******************************************************************************************
 busaround:  ld      a,(MUSICFLAG)
             or      a
-            jp      z,$0F97
+            jp      z,busaround_done
             push    iy
-            ld      iy,$D0B1
-            call    $0F28
-            ld      iy,$D0E1
-            call    $0F28
+            ld      iy,$D0B1            ; Processor 1 score interpreter
+            call    musinterp
+            ld      iy,$D0E1            ; Processor 2 score interpreter
+            call    musinterp
             pop     iy
+busaround_done:
             ret
 
-;********************************************************************
-
-            push    bc
-            call    $0F7E
+;******************************************************************************************
+; ----> BMS     TERSE CODE word for background music score processing.
+;******************************************************************************************
+_BMS:       push    bc
+            call    busaround
             pop     bc
             DW      _DSPATCH
 
-;********************************************************************
-            ld      (iy+$00),l
+;******************************************************************************************
+; ----> loadpc  Install a new score address as both MUSPC and STARTPC.
+;******************************************************************************************
+loadpc:     ld      (iy+$00),l
             ld      (iy+$02),l
             ld      (iy+$01),h
             ld      (iy+$03),h
             ret
 
 ;*******************************************************************
-; Low-level music control SUBRs used by the CODE wrappers below.
-; Source names are bmusic, pmusic, mmusic, and mpmusic.
+; Music score start controls.
+;
+; bmusic / mmusic start only when PRIORITY (IY+$08) is clear. pmusic / mpmusic
+; clear the selected processor first, then install the new score as priority. The m*
+; forms take MULTIPLE in E; the other forms set MULTIPLE=1. Successful starts finish
+; through loadpc, keeping MUSPC and STARTPC synchronized.
 
-bmusic:     ld      a,(iy+$08)
+bmusic:     ld      a,(iy+$08)          ; PRIORITY
             or      a
-            jp      nz,$0FC1
-            ld      (iy+$2f),$01
-            ld      (iy+$2e),a
+            jp      nz,bmusic_done      ; Do not replace a priority score
+            ld      (iy+$2f),$01        ; MST: request score interpretation
+            ld      (iy+$2e),a          ; NOTETIMER = 0
             inc     a
-            ld      (iy+$07),a
-            jp      $0F9F
+            ld      (iy+$07),a          ; MULTIPLE = 1
+            jp      loadpc
+bmusic_done:
             ret
 
-pmusic:     ld      (iy+$2f),$01
+pmusic:     ld      (iy+$2f),$01        ; Hold timed updates during reinitialization
             push    iy
             exx
             pop     de
             call    emusic
             ld      a,$01
-            ld      (iy+$2f),a
-            ld      (iy+$07),a
-            ld      (iy+$08),a
-            jp      $0F9F
+            ld      (iy+$2f),a          ; MST = 1: interpret the new score
+            ld      (iy+$07),a          ; MULTIPLE = 1
+            ld      (iy+$08),a          ; PRIORITY = 1
+            jp      loadpc
 
-mmusic:     ld      a,(iy+$08)
+mmusic:     ld      a,(iy+$08)          ; PRIORITY
             or      a
-            jp      nz,$0FEF
-            ld      (iy+$2f),$01
-            ld      (iy+$2e),a
-            ld      (iy+$07),e
-            jp      $0F9F
+            jp      nz,mmusic_done      ; Do not replace a priority score
+            ld      (iy+$2f),$01        ; MST: request score interpretation
+            ld      (iy+$2e),a          ; NOTETIMER = 0
+            ld      (iy+$07),e          ; MULTIPLE supplied by caller
+            jp      loadpc
+mmusic_done:
             ret
 
-mpmusic:    ld      (iy+$2f),$01
+mpmusic:    ld      (iy+$2f),$01        ; Hold timed updates during reinitialization
             push    iy
             exx
             pop     de
@@ -4018,18 +4051,18 @@ mpmusic:    ld      (iy+$2f),$01
             ld      (iy+$2f),a
             ld      (iy+$08),a
             ld      (iy+$07),e
-            jp      $0F9F
+            jp      loadpc
 
 ;******************************************************************************************
 
-_EMUSIC:    exx                         ; TERSE CODE; first music processor array
-            ld      de,$D0B1            ; Why load value and then add to it?
-            ld      hl,$002F            ; resulting address is $D0E0
-            add     hl,de
-            ld      (hl),$01
-            ld      hl,$0004
+_EMUSIC:    exx                         ; TERSE CODE: initialize music processor 1
+            ld      de,$D0B1            ; Base of MUSIC-BARRAY-1
+            ld      hl,$002F            ; MST field
+            add     hl,de               ; $D0E0
+            ld      (hl),$01            ; Hold score processing during initialization
+            ld      hl,$0004            ; SOUNDBOX field
             add     hl,de               ; $D0B5
-            ld      (hl),$18
+            ld      (hl),$18            ; Processor 1 maps to ports $10-$17
             call    emusic
             DW      _DSPATCH
 
@@ -4080,14 +4113,14 @@ _MPMUSIC:   pop     hl
 ;    emusic CALL, ( musicoverun flag is zeroed last ) NEXT
 ;   ( *** ALWAYS CALL E2MUSIC AS AN INIT IN PROGRAM *** )
 ;##########################################################################################
-_E2MUSIC:   exx
-            ld      de,$D0E1
-            ld      hl,$002F
-            add     hl,de
-            ld      (hl),$01
-            ld      hl,$0004
-            add     hl,de
-            ld      (hl),$58
+_E2MUSIC:   exx                         ; TERSE CODE: initialize music processor 2
+            ld      de,$D0E1            ; Base of MUSIC-BARRAY-2
+            ld      hl,$002F            ; MST field
+            add     hl,de               ; $D110
+            ld      (hl),$01            ; Hold score processing during initialization
+            ld      hl,$0004            ; SOUNDBOX field
+            add     hl,de               ; $D0E5
+            ld      (hl),$58            ; Processor 2 maps to ports $50-$57
             call    emusic
             DW      _DSPATCH
 
@@ -4695,117 +4728,151 @@ _GETRANK:   DB      _ENTER              ; Enter TERSE execution
             DW      _RETURN             ; ; (Return, leaving the rank's speech address on the stack)
 
 ;******************************************************************************************
-; Phrases used in attract mode
+; GORFOS BLOCK 0109 - ATTRACT SPEECH AND COIN SOUND
 ;******************************************************************************************
 
-phrases:    DW      SPK_INSERT
+; Attract-mode speech selection table used by goyak. The low two bits selected from the
+; Z80 refresh register index one of these four primitive speech records.
+GOYTBL:     DW      SPK_INSERT
             DW      SPK_GORF
             DW      SPK_LONG
             DW      SPK_INSERT
 
-;******************************************************************************************
-; Music data ?
-;******************************************************************************************
-L1354:      DB      $14,$86,$10,$10,$06,$10,$3C,$01
-            DB      $03,$13,$5E,$12,$96,$11,$7E,$16
-            DB      $FF,$15,$0F,$01,$40,$04
+; Coin sound score consumed by the native music opcode interpreter.
+;
+; Source score: VIBS $86; MASTER $10; RAMP $03,$01,$3C,$10; TONES G1,E1,C2;
+;               ABVOLS $FF; MCVOLS $0F; DURATION $40; QUIET.
+COINSOUND1: DB      $14,$86             ; VIBS $86
+coinsound1_continue:
+            DB      $10,$10             ; MASTER $10
+            DB      $06,$10,$3C,$01,$03 ; RAMP
+            DB      $13,$5E,$12,$96,$11,$7E ; TONES G1, E1, C2
+            DB      $16,$FF             ; ABVOLS $FF
+            DB      $15,$0F             ; MCVOLS $0F
+            DB      $01,$40             ; DURATION $40
+            DB      $04                 ; QUIET
 
-AM_FX:      DB      $02,$56,$13
+; COINSOUND2 is a CONTJUMP stream. Its target is coinsound1_continue, so it enters
+; COINSOUND1 immediately after the opening VIBS command. goyak uses this entry while
+; synchronizing the attract joystick effect with delayed speech.
+COINSOUND2: DB      $02,$56,$13
 
-W_136D:
-            DB      _ENTER
+;******************************************************************************************
+; ----> CNSD    Start COINSOUND1 on music processor 2 through B2MUSIC.
+;               B2MUSIC is non-preemptive: an active priority score is preserved.
+;******************************************************************************************
+_CNSD:      DB      _ENTER
             DW      _LIT
-            DW      L1354
+            DW      COINSOUND1
             DW      _B2MUSIC
             DW      _RETURN
 
 ;******************************************************************************************
-; say something if joystick moved in attract mode
+; ----> goyak   Attract-mode joystick speech driver.
+;
+;               creditcheck calls goyak while DEMOMODE is active. Joystick movement starts
+;               one GOYTBL phrase and sets GOYFLAG to prevent immediate retriggering. When
+;               the speech queue is idle, goyak loads ONHOLD=$3B and priority-starts
+;               COINSOUND2 on processor 1 before queuing the selected speech primitive.
 ;******************************************************************************************
-AM_TALK:    ld      a,(AMBUSY)          ; Still playing FX / Talk from before
+goyak:      ld      a,(GOYFLAG)
             and     a
-            ret     nz                  ; Yes, so exit
-            call    gj                  ; Read joystick, lower 4 bits, active high
-            and     $0F                 ; Mask out directions
-            ret     z                   ; Return if nothing active.
+            ret     nz                  ; One attract phrase is already active
+            call    gj                  ; Read active player's joystick
+            and     $0F
+            ret     z                   ; No movement
             ld      a,$01
-            ld      (MUSICFLAG),a
-            ld      a,($D124)
+            ld      (MUSICFLAG),a       ; Enable both music processors
+
+            ld      a,($D124)           ; PHONE#: phonemes remaining in current primitive
             and     a
-            jp      nz,amtalk0
-            ld      hl,($D125)
-            ld      de,($D127)
+            jp      nz,goyak_select_phrase
+            ld      hl,($D125)          ; TALKIN: next queue insertion slot
+            ld      de,($D127)          ; TALKOUT: next queue playback slot
             sbc     hl,de
-            jp      nz,amtalk0
+            jp      nz,goyak_select_phrase
+
             ld      a,$3B
-            ld      ($D111),a
-            ld      hl,AM_FX
-            ld      iy,$D0B1
-            call    pmusic
-amtalk0:    ld      a,r
+            ld      ($D111),a           ; ONHOLD: delay before speech service starts
+            ld      hl,COINSOUND2
+            ld      iy,$D0B1            ; Music processor 1
+            call    pmusic              ; Priority-start synchronized coin effect
+
+goyak_select_phrase:
+            ld      a,r
             and     $03
-            rlca
+            rlca                        ; Word-table offset: (R & 3) * 2
             ld      e,a
             ld      d,$00
-            ld      hl,phrases
+            ld      hl,GOYTBL
             add     hl,de
             ld      e,(hl)
             inc     hl
-            ld      d,(hl)
-            ld      a,$01               ; Set flag to say we are busy
-            ld      (AMBUSY),a
+            ld      d,(hl)              ; DE = selected TALK primitive
+            ld      a,$01
+            ld      (GOYFLAG),a
             jp      speak
 
 ;******************************************************************************************
-; Speak random phrase
+; GORFOS BLOCK 0110 - PLAYER TAUNT SPEECH
 ;******************************************************************************************
 
-GENERIC:    DW      SPK_CONQUER
+; Follow-up phrase table used by LBYAK after the player's last fire base is destroyed.
+LBYTBL:     DW      SPK_CONQUER
             DW      SPK_TRY
             DW      SPK_ESCAPE
             DW      SPK_GORF
             DW      SPK_HAIL
 
-_SPKGENERIC:
-            DB      _ENTER
+;******************************************************************************************
+; ----> LBYAK   Last-base taunt sequence.
+;
+;               The last-base destruction path calls LBYAK. It speaks either TOOBAD or BITE,
+;               then the player's rank, then one random entry from LBYTBL.
+;******************************************************************************************
+_LBYAK:     DB      _ENTER
             DW      _LITbyte
             DB      $02
             DW      _RND
             DW      _0BRANCH
-            DW      generic0
+            DW      lbyak_bite
             DW      _LIT
             DW      SPK_TOOBAD
             DW      _BRANCH
-            DW      generic1
-generic0:   DW      _LIT
+            DW      lbyak_continue
+lbyak_bite: DW      _LIT
             DW      SPK_BITE
-generic1:   DW      _SPEAK
+lbyak_continue:
+            DW      _SPEAK
             DW      _GETRANK
             DW      _SPEAK
             DW      _LITbyte
             DB      $05
             DW      _RND
             DW      _ARRAY
-            DW      GENERIC
+            DW      LBYTBL
             DW      _at
             DW      _SPEAK
             DW      _RETURN
 
-;******************************************************************************************
-; Speak random insult
-;******************************************************************************************
-
-INSULTS:    DW      SPK_HAHA
+; Non-repeating hit-taunt table. HTYRND at $D12A stores the previous table index.
+HITYTBL:    DW      SPK_HAHA
             DW      SPK_ENEMY
             DW      SPK_BETCHA
             DW      SPK_BADMOVE
             DW      SPK_GOTYOU
             DW      SPK_SOME
 
-_SPKINSULT:
-            DB      _ENTER
+;******************************************************************************************
+; ----> HITYAK  Surviving-fire-base hit taunt.
+;
+;               UNEQRND selects a different HITYTBL entry than the preceding call. Entries
+;               2-5 are followed by the player's rank; entries 0-1 are complete phrases and
+;               are spoken without a rank suffix.
+;******************************************************************************************
+_HITYAK:    DB      _ENTER
             DW      _LIT
-            DW      $D12A
+            DW      $D12A               ; HTYRND
             DW      _LITbyte
             DB      $06
             DW      _UNEQRND
@@ -4813,18 +4880,20 @@ _SPKINSULT:
             DW      _1
             DW      _gt
             DW      _0BRANCH
-            DW      insult0
+            DW      hityak_no_rank
             DW      _ARRAY
-            DW      INSULTS
+            DW      HITYTBL
             DW      _at
             DW      _SPEAK
             DW      _GETRANK
             DW      _BRANCH
-            DW      insult1
-insult0:    DW      _ARRAY
-            DW      INSULTS
+            DW      hityak_final_speak
+hityak_no_rank:
+            DW      _ARRAY
+            DW      HITYTBL
             DW      _at
-insult1:    DW      _SPEAK
+hityak_final_speak:
+            DW      _SPEAK
             DW      _RETURN
 
 ;******************************************************************************************
@@ -7584,7 +7653,12 @@ GORF_UNK6:
             ld      (bc),a
             ret     nz
             daa
-            ld      hl,$27A1
+; GORFOS Block 0189 names the looping dive score KBSCORE.
+KBSCORE     EQU     $27A1
+
+; ----> playkbs  Start KBSCORE on music processor 2.
+;                 bmusic preserves an active priority score on this processor.
+playkbs:    ld      hl,KBSCORE
             ld      iy,$D0E1
             jp      bmusic
             ld      a,(PLAYERUP)
@@ -8123,7 +8197,11 @@ GORF_UNK6:
             and     a
             ret     nz
             call    $2A7F
-            ld      hl,$2669
+SCORE_2669  EQU     $2669               ; Program-2 score entry
+
+            ; Start SCORE_2669 on processor 1. bmusic preserves an active priority
+            ; score, so this event cannot interrupt a priority effect.
+            ld      hl,SCORE_2669
             ld      iy,$D0B1
             jp      bmusic
             ld      bc,$0E15
@@ -8680,6 +8758,13 @@ GORF_UNK6:
             ret
             xor     d
             cp      a
+;******************************************************************************************
+; ----> creditcheck  Demo/coin event service.
+;
+;                    During DEMOMODE this routine services attract-mode joystick chatter
+;                    through goyak before evaluating coin/start conditions. Outside DEMOMODE
+;                    it returns after the common event update at $1A60.
+;******************************************************************************************
 creditcheck:
             call    $1A60
             ld      a,(DEMOMODE)
@@ -8688,7 +8773,7 @@ creditcheck:
             in      a,($10)
             bit     2,a
             jp      z,COLDSTRT
-            call    $1376
+            call    goyak               ; Attract-mode joystick speech / coin effect
             ld      a,($D009)
             and     a
             jr      nz,$2F14
@@ -12864,7 +12949,7 @@ ASTRO_BATTLES_INVADER_BULLET_2:
             pop     ix
             ld      a,($D94B)
             add     a,$05
-            ld      ($D0F0),a
+            ld      ($D0F0),a           ; Processor 2 TIMEBASE (IY=$D0E1, offset $0F)
             DW      _DSPATCH
 ;******************************************************************************************
             inc     c
@@ -14778,7 +14863,11 @@ LASER_ATTACK_BUG_SHIP_COMPACT:
             ld      d,$00
             push    de
             call    $900C
-            ld      hl,$8BA0
+SCORE_8BA0  EQU     $8BA0               ; Program-2 score entry
+
+            ; This mission state transition preempts processor 2 with SCORE_8BA0.
+            ; pmusic clears the selected processor before installing the score.
+            ld      hl,SCORE_8BA0
             ld      iy,$D0E1
             call    pmusic
             pop     de
@@ -15996,7 +16085,11 @@ GALAXIANS_SHIELD_SHIP_4:
             rst     $38
             inc     b
             inc     bc
-            ld      hl,$9786
+SCORE_9786  EQU     $9786               ; Galaxians-module score entry
+
+            ; Start SCORE_9786 on processor 2. bmusic leaves an active priority score
+            ; undisturbed.
+            ld      hl,SCORE_9786
             ld      iy,$D0E1
             jp      bmusic
             di
@@ -21193,7 +21286,7 @@ SPKCOIN:
             DW      _0BRANCH
             DW      spkcoin2
             DW      _LIT
-            DW      AMBUSY
+            DW      GOYFLAG
             DW      _BONE
             DW      _LITbyte
             DB      $02
@@ -21882,7 +21975,7 @@ W_B8BB:
             DW      $B8FA
             DW      $B32C
             DW      _LIT
-            DW      AMBUSY
+            DW      GOYFLAG
             DW      _BONE
             DW      $B341
             DW      _LIT
@@ -23370,7 +23463,7 @@ COMBO1          EQU     $D042                   ; Combo 1 Vector (2 bytes)
 ;******************************************************************************************
 RELABS          EQU     $D080                   ; relabs pointer
 FFRELABS        EQU     $D083                   ; ffrelabs pointer
-AMBUSY          EQU     $D08B                   ; Used for speech when joystick moved
+GOYFLAG         EQU     $D08B                   ; Attract speech re-entry flag used by goyak
 RND_SEED        EQU     $D0AB                   ; 32-bit Random Seed RND#0
 MUSICFLAG       EQU     $D0AF                   ;
 
