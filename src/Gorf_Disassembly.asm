@@ -4427,7 +4427,7 @@ phone:      ld      a,(ONHOLD)
 
             in      a,($12)             ; NEWPHONE: SC-01 ready status
             bit     7,a
-            jp      z,phone_return
+            jp      z,phone_return_gate
 
             ld      a,(PHONECOUNT)
             or      a
@@ -4435,8 +4435,7 @@ phone:      ld      a,(ONHOLD)
 
             ld      hl,(TALKIN)
             ld      de,(TALKOUT)
-            and     a
-            sbc     hl,de
+            sbc     hl,de               ; Carry is already clear from PHONECOUNT OR A above
             jp      z,phone_queue_empty
 
             ld      bc,$0D15            ; Source-defined auxiliary I/O cycle before a primitive
@@ -4491,12 +4490,15 @@ phone_send:
             ld      c,$17               ; PHONEOUT
             in      a,(c)               ; I/O cycle presents phoneme in upper address byte
             ld      (TALKHERE),hl
-phone_return:
-            ret
+
+phone_return_gate:
+            jp      phone_return        ; Preserve the ROM control-flow join at $1155
 
 phone_hold:
             dec     a
             ld      (ONHOLD),a
+
+phone_return:
             ret
 
 ;******************************************************************************************
